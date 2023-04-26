@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.job4j.url_shortcut.model.Person;
+import ru.job4j.url_shortcut.model.Site;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";
     //    public static final String SIGN_UP_URL = "/users/sign-up";
-    public static final String SIGN_UP_URL = "/person/sign-up";
+    public static final String SIGN_UP_URL = "/site/sign-up";
 
     private AuthenticationManager auth;
 
@@ -38,10 +38,13 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
             throws AuthenticationException {
+        System.out.println("1!!!!!!!!!!!!!!");
         try {
-            Person creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), Person.class);
-
+            System.out.println("2!!!!!!!!!!!!!!");
+            Site creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), Site.class);
+            System.out.println("CREDS:" + creds.toString());
+            System.out.println("3!!!!!!!!!!!!!!");
             return auth.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             creds.getLogin(),
@@ -51,6 +54,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override

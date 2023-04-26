@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonCredentials {
+public class SiteCredentials {
     @Size(min = 5, max = 50, message = "Login must be between 5 and 50 characters")
     private String login;
     @NotBlank(message = "Password must be not empty")
