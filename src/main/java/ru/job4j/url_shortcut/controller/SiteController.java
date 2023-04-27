@@ -42,8 +42,14 @@ public class SiteController {
 
     /*GET с использованием ResponseEntity:*/
     @GetMapping("/all")
-    public ResponseEntity<List<Site>> example2() {
+    public ResponseEntity<List<Site>> getAll() {
         return ResponseEntity.of(Optional.of(sites.findAll()));
+    }
+
+    @GetMapping("/statistic")
+    public ResponseEntity<List<UrlEntityDTO>> getStatByUrlsForSite() {
+        String login = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.of(Optional.of(urlEntityService.getStatByUrlsForSite(login)));
     }
 
     @GetMapping("/{id}")
@@ -52,6 +58,22 @@ public class SiteController {
         return new ResponseEntity<Site>(
                 site.orElse(new Site()),
                 site.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
+        );
+    }
+
+    @GetMapping("/redirect/{code}")
+    public ResponseEntity<Url> redirect(@PathVariable String code) {
+        var urlEntity = this.urlEntityService.findByConvertedUrl(code);
+        Optional<Url> url = Optional.empty();
+        if(urlEntity.isPresent()){
+            url = Optional.of(new Url(urlEntity.get().getUrlLine()));
+        }
+        if(urlEntity.isPresent()){
+            this.urlEntityService.increaseRequestStat(urlEntity.get());
+        }
+        return new ResponseEntity<Url>(
+                url.orElse(new Url()),
+                url.isPresent() ? HttpStatus.FOUND : HttpStatus.NOT_FOUND
         );
     }
 

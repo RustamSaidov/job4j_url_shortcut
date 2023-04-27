@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import ru.job4j.url_shortcut.model.Site;
 import ru.job4j.url_shortcut.model.SiteCredentials;
 import ru.job4j.url_shortcut.model.UrlEntity;
+import ru.job4j.url_shortcut.model.UrlEntityDTO;
 import ru.job4j.url_shortcut.repository.SiteRepository;
 import ru.job4j.url_shortcut.repository.UrlEntityRepository;
 
@@ -26,6 +27,7 @@ import static java.util.Collections.emptyList;
 public class SimpleUrlEntityService implements UrlEntityService {
 
     private final UrlEntityRepository urlEntityRepository;
+    private final SiteRepository siteRepository;
 
 
     @Override
@@ -51,6 +53,24 @@ public class SimpleUrlEntityService implements UrlEntityService {
     @Override
     public Optional<UrlEntity> findByUrlLine(String urlLine) {
         return urlEntityRepository.findByUrlLine(urlLine);
+    }
+
+    @Override
+    public Optional<UrlEntity> findByConvertedUrl(String convertedUrl) {
+        return urlEntityRepository.findByConvertedUrl(convertedUrl);
+    }
+
+    @Override
+    public Optional<UrlEntity> increaseRequestStat(UrlEntity urlEntity) {
+        urlEntity.setTotalCount(urlEntity.getTotalCount()+1);
+        return Optional.of(urlEntityRepository.save(urlEntity));
+    }
+
+    @Override
+    public List<UrlEntityDTO> getStatByUrlsForSite(String login) {
+        Site site = siteRepository.findByLogin(login).get();
+        urlEntityRepository.findAllBySite(site);
+        return null;
     }
 
 //    @Override
