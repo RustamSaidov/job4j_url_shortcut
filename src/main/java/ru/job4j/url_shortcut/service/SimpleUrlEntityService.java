@@ -4,6 +4,7 @@ package ru.job4j.url_shortcut.service;
 import lombok.AllArgsConstructor;
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Service;
+import org.sql2o.Sql2o;
 import ru.job4j.url_shortcut.model.Site;
 import ru.job4j.url_shortcut.model.UrlEntity;
 import ru.job4j.url_shortcut.model.UrlEntityDTO;
@@ -21,6 +22,7 @@ public class SimpleUrlEntityService implements UrlEntityService {
 
     private final UrlEntityRepository urlEntityRepository;
     private final SiteRepository siteRepository;
+    private final Sql2o sql2o;
 
 
     @Override
@@ -54,8 +56,8 @@ public class SimpleUrlEntityService implements UrlEntityService {
     }
 
     @Override
-    public Optional<UrlEntity> increaseRequestStat(UrlEntity urlEntity) {
-        urlEntity.setTotalCount(urlEntity.getTotalCount() + 1);
+    public synchronized Optional<UrlEntity> increaseRequestStat(UrlEntity urlEntity) {
+        urlEntityRepository.incrementTotal(urlEntity.getId(), sql2o);
         return Optional.of(urlEntityRepository.save(urlEntity));
     }
 
@@ -64,7 +66,7 @@ public class SimpleUrlEntityService implements UrlEntityService {
         Site site = siteRepository.findByLogin(login).get();
         List<UrlEntity> urlEntityList = urlEntityRepository.findAllBySite(site);
         List<UrlEntityDTO> urlEntityDTOList = new ArrayList<>();
-        urlEntityList.stream().forEach(u -> urlEntityDTOList.add(new UrlEntityDTO(u.getUrlLine(), u.getTotalCount())));
+        urlEntityList.stream().forEach(u -> urlEntityDTOList.add(new UrlEntityDTO(u.getUrlLine(), u.getTotal())));
         return urlEntityDTOList;
     }
 

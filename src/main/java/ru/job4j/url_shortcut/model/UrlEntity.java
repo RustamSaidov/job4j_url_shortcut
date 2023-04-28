@@ -16,7 +16,7 @@ public class UrlEntity {
     private int id;
     private String urlLine;
     private String convertedUrl;
-    private int totalCount;
+    private int total;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id")
     private Site site;

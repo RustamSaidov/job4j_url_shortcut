@@ -1,9 +1,8 @@
 package ru.job4j.url_shortcut.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/site")
 public class SiteController {
     private final SiteService sites;
     private final UrlEntityService urlEntityService;
     private final BCryptPasswordEncoder encoder;
-    private static final Logger LOGGER = LoggerFactory.getLogger(SiteController.class.getSimpleName());
     private final ObjectMapper objectMapper;
 
     public SiteController(SiteService sites, UrlEntityService urlEntityService, BCryptPasswordEncoder encoder, ObjectMapper objectMapper) {
@@ -141,7 +140,7 @@ public class SiteController {
                 put("type", e.getClass());
             }
         }));
-        LOGGER.error(e.getLocalizedMessage());
+        log.error(e.getLocalizedMessage());
     }
 
     /*GET с использованием ResponseEntity:*/
