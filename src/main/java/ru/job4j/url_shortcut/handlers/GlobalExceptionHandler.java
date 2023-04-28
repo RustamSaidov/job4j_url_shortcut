@@ -49,5 +49,4 @@ public class GlobalExceptionHandler {
         }));
         LOGGER.error(e.getMessage());
     }
-
 }

@@ -24,18 +24,27 @@ public class SimpleSiteService implements SiteService, UserDetailsService {
 
     private final SiteRepository siteRepository;
     private final int RANDOM_STRING_LENGTH = 20;
+    private final int RANDOM_SHORT_URL_LINE = 7;
 
     @Override
     public String convertURL(String site) {
-        String convertedURL = RandomStringUtils.random(RANDOM_STRING_LENGTH, true, true);
+        String convertedURL = RandomStringUtils.random(RANDOM_SHORT_URL_LINE, true, true);
         return convertedURL;
     }
 
     @Override
     public Site fillSiteByCredentials(String site) {
-        String generatedLogin = RandomStringUtils.random(RANDOM_STRING_LENGTH, true, true);
-        String generatedPassword = RandomStringUtils.random(RANDOM_STRING_LENGTH, true, true);
-        return new Site(0, site,generatedLogin,generatedPassword);
+        String generatedLogin = "";
+        String generatedPassword = "";
+        boolean flag = false;
+        while (!flag) {
+            generatedLogin = RandomStringUtils.random(RANDOM_STRING_LENGTH, true, true);
+            generatedPassword = RandomStringUtils.random(RANDOM_STRING_LENGTH, true, true);
+            if (siteRepository.findByLogin(generatedLogin).isEmpty() && siteRepository.findByPassword(generatedPassword).isEmpty()) {
+                flag = true;
+            }
+        }
+        return new Site(0, site, generatedLogin, generatedPassword);
     }
 
     @Override

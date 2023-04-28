@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -65,10 +64,10 @@ public class SiteController {
     public ResponseEntity<Url> redirect(@PathVariable String code) {
         var urlEntity = this.urlEntityService.findByConvertedUrl(code);
         Optional<Url> url = Optional.empty();
-        if(urlEntity.isPresent()){
+        if (urlEntity.isPresent()) {
             url = Optional.of(new Url(urlEntity.get().getUrlLine()));
         }
-        if(urlEntity.isPresent()){
+        if (urlEntity.isPresent()) {
             this.urlEntityService.increaseRequestStat(urlEntity.get());
         }
         return new ResponseEntity<Url>(
@@ -78,34 +77,30 @@ public class SiteController {
     }
 
     @PostMapping("/convert")
-    public ResponseEntity<Code> convert(@Valid @RequestBody SiteLine siteLine) throws MalformedURLException {
-        if(!UrlValidator.getInstance().isValid(siteLine.getSite())){
+    public ResponseEntity<Code> convert(@Valid @RequestBody Url url) throws MalformedURLException {
+        if (!UrlValidator.getInstance().isValid(url.getUrl())) {
             throw new MalformedURLException("This URL is not correct");
         }
-        /*проверить, что адреса еще нет в БД. Если есть - вернуть код*/
-        Optional<UrlEntity> urlEntityInDB = urlEntityService.findByUrlLine(siteLine.getSite());
-        if(urlEntityInDB.isPresent()){
+        /*проверить, что адреса еще нет в БД. Если есть - вернуть имеющийся код*/
+        Optional<UrlEntity> urlEntityInDB = urlEntityService.findByUrlLine(url.getUrl());
+        if (urlEntityInDB.isPresent()) {
             return ResponseEntity.of(Optional.of(new Code(urlEntityInDB.get().getConvertedUrl())));
         }
-        Code code = new Code(sites.convertURL(siteLine.getSite()));
+        Code code = new Code(sites.convertURL(url.getUrl()));
         String login = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Site site = sites.findByLogin(login).get();
-        UrlEntity urlEntity = new UrlEntity();
-        urlEntity.setUrlLine(siteLine.getSite());
-        urlEntity.setConvertedUrl(code.getCode());
-        urlEntity.setTotalCount(0);
-        urlEntity.setSite(site);
+        UrlEntity urlEntity = new UrlEntity(0, url.getUrl(), code.getCode(), 0, site);
         urlEntityService.save(urlEntity);
         return ResponseEntity.of(Optional.of(code));
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<Site> registration(@Valid @RequestBody SiteLine siteLine) throws MalformedURLException {
-        if(!UrlValidator.getInstance().isValid(siteLine.getSite())){
+    public ResponseEntity<SiteCredentials> registration(@Valid @RequestBody SiteLine siteLine) throws MalformedURLException {
+        if (!UrlValidator.getInstance().isValid(siteLine.getSite())) {
             throw new MalformedURLException("This URL is not correct");
         }
         var filledSite = sites.fillSiteByCredentials(siteLine.getSite());
-        SiteCredentials siteDTO = new SiteCredentials(filledSite.getLogin(),filledSite.getPassword());
+        SiteCredentials siteDTO = new SiteCredentials(filledSite.getLogin(), filledSite.getPassword());
         filledSite.setPassword(encoder.encode(filledSite.getPassword()));
         var optionalSite = sites.save(filledSite);
         var site = optionalSite
@@ -113,20 +108,7 @@ public class SiteController {
                         HttpStatus.NOT_FOUND, "SiteLine is not registered. May be its already exist in Database!!!!!!!!!"
                 ));
         optionalSite.get().setPassword(siteDTO.getPassword());
-        return ResponseEntity.of(optionalSite);
-    }
-
-    @PostMapping("/sign-up")
-    public void signUp(@Valid @RequestBody Site site) {
-        if (site.getLogin() == null || site.getPassword() == null) {
-            throw new NullPointerException("login and password mustn't be empty");
-        }
-        if (site.getPassword().length() < 6) {
-            throw new IllegalArgumentException("Invalid password. Password length must be more than 5 characters.");
-        }
-
-        site.setPassword(encoder.encode(site.getPassword()));
-        sites.save(site);
+        return ResponseEntity.of(Optional.of(siteDTO));
     }
 
     @PutMapping("/")

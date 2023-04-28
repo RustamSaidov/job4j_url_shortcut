@@ -12,4 +12,6 @@ public interface SiteRepository extends CrudRepository<Site, Integer> {
     boolean deleteById(int id);
 
     Optional<Site> findByLogin(String login);
+
+    Optional<Site> findByPassword(String password);
 }

@@ -3,7 +3,6 @@ package ru.job4j.url_shortcut.repository;
 import org.springframework.data.repository.CrudRepository;
 import ru.job4j.url_shortcut.model.Site;
 import ru.job4j.url_shortcut.model.UrlEntity;
-import ru.job4j.url_shortcut.model.UrlEntityDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +16,5 @@ public interface UrlEntityRepository extends CrudRepository<UrlEntity, Integer> 
 
     Optional<UrlEntity> findByConvertedUrl(String convertedUrl);
 
-    List<UrlEntityDTO> findAllBySite();
-
+    List<UrlEntity> findAllBySite(Site site);
 }

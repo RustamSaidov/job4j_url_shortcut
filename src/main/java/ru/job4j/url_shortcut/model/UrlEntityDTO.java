@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrlEntityDTO {
-    private String urlLine;
-    private int totalCount;
+    private String url;
+    private int total;
 }
