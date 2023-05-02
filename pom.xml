@@ -10,9 +10,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.job4j</groupId>
-    <artifactId>job4j_url_shortcut</artifactId>
+    <artifactId>job4j_urlshortcut</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>job4j_url_shortcut</name>
+    <name>job4j_urlshortcut</name>
     <description>Service for shortening online links</description>
 
 
@@ -23,10 +23,10 @@
     <!--		<relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
     <!--	</parent>-->
 
-    <properties>
-        <java.version>17</java.version>
-        <checkstyle.config.location>C:\projects\job4j-auth1\checkstyle.xml</checkstyle.config.location>
-    </properties>
+<!--    <properties>-->
+<!--        <java.version>17</java.version>-->
+<!--        <checkstyle.config.location>C:\projects\job4j-auth1\checkstyle.xml</checkstyle.config.location>-->
+<!--    </properties>-->
     <profiles>
         <profile>
             <id>test</id>
