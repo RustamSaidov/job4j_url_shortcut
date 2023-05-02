@@ -54,8 +54,6 @@ public class SimpleUrlEntityService implements UrlEntityService {
         Optional<Url> url = Optional.empty();
         if (urlEntity.isPresent()) {
             url = Optional.of(new Url(urlEntity.get().getUrlLine()));
-        }
-        if (urlEntity.isPresent()) {
             increaseRequestStat(urlEntity.get());
         }
         return url;
